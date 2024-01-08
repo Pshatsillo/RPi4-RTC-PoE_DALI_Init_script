@@ -13,10 +13,9 @@ else:
     data = json.loads(config_json)
     x = 0
     while x < 16:
-        data["group"].append({x:[{"Device":99}]})
+        data["group"].append({str(x):[{"Device":99}]})
         devGrp = data["group"]
         x +=1
-
 def writeToConfJson():
     with open("config.json", "w") as json_file:
         json.dump(data, json_file)
@@ -67,7 +66,8 @@ def SearchAndCompare(fd, addr):
 
     rfds, wfds, efds = select.select( [file_in], [], [], 1)
     if rfds:
-        print(rfds[0].readline())
+        rfds[0].readline()
+        # print(rfds[0].readline())
         return 1
     else:
         # print('none')
@@ -165,24 +165,22 @@ while ShortAddr < 64:
             send_command(file_in, "AB00")
             libc.usleep(34194)
     ShortAddr += 1
-
-writeToConfJson()
-
 GroupCnt = 0
 for group in devGrp:
     devList = group[str(GroupCnt)]
     for dev in devList:
         if not dev['Device'] == 99:
-            print(dev['Device'])
+            print("Adding device ", dev['Device'], " to group ", GroupCnt)
             devID = int(dev['Device'])
-            print(f'{devID:0>{6}b}')
+            # print(f'{devID:0>{6}b}')
             string = "0" + f'{devID:0>{6}b}' + "10110" + f'{GroupCnt:0>{4}b}'
             hexval = '{:0{width}x}'.format(int(string,2), width=4)
-            print(hexval)
+            # print(hexval)
             send_command(file_in, hexval)
             libc.usleep(90000)
             send_command(file_in, hexval)
             libc.usleep(90000)
     GroupCnt += 1
+writeToConfJson()
 send_command(file_in, "A100")
 file_in.close()
