@@ -1,3 +1,4 @@
+1. ``` git clone https://github.com/Pshatsillo/RPi4-RTC-PoE_DALI_Init_script.git ```
 1. Запускаем DALI_Init.py
    ``` python DALI_Init.py ```
 2. При первом запуске создаются случайные адреса на шине и записываются в **config.json**
