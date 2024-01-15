@@ -97,18 +97,20 @@ while ShortAddr < 64:
         if SearchAndCompare(file_in, SearchAddr - 1) == 0:
             SearchAndCompare(file_in, SearchAddr)
             if not os.path.isfile("config.json"):
+                print("24-bit address found ", hex(SearchAddr) , "- assigning short address " , ShortAddr)
+                print("resp = 1 no cfg found...")
                 data["devices"].append({"Address":f'{SearchAddr:02x}', "Short":ShortAddr})
                 setAddr = ((ShortAddr << 1) | 1)
                 send_command(file_in, "B7" + f'{setAddr:02x}')
                 libc.usleep(102582)
                 send_command(file_in, "AB00")
                 libc.usleep(34194)
-                print("24-bit address found first ", hex(SearchAddr) , "- assigning short address " , ShortAddr)
             else:
                 isSet = False
                 for device in data["devices"]:
                     if f'{SearchAddr:02x}' == device["Address"]:
                         print("24-bit address found first ", hex(SearchAddr), "- assigning short address ", device["Short"])
+                        print("resp = 1 found...")
                         setAddr = ((device["Short"] << 1) | 1)
                         send_command(file_in, "B7" + f'{setAddr:02x}')
                         libc.usleep(102582)
@@ -123,6 +125,7 @@ while ShortAddr < 64:
                     send_command(file_in, "AB00")
                     libc.usleep(34194)
                     print("24-bit address found first ", hex(SearchAddr) , "- assigning short address " , ShortAddr)
+                    print("resp = 1 not found...")
             break
     else:
         print("No devices detected\n")
@@ -140,6 +143,7 @@ while ShortAddr < 64:
     if not os.path.isfile("config.json"):
                 data["devices"].append({"Address":f'{SearchAddr:02x}', "Short":ShortAddr})
                 print("24-bit address found first ", f'{SearchAddr:02x}', "- assigning short address ", ShortAddr)
+                print("No cfg found...")
                 setAddr = ((ShortAddr << 1) | 1)
                 send_command(file_in, "B7" + f'{setAddr:02x}')
                 libc.usleep(102582)
@@ -150,6 +154,7 @@ while ShortAddr < 64:
         for device in data["devices"]:
             if f'{SearchAddr:02x}' == device["Address"]:
                 print("24-bit address found first ", hex(SearchAddr), "- assigning short address ", device["Short"])
+                print("Found...")
                 setAddr = ((device["Short"] << 1) | 1)
                 send_command(file_in, "B7" + f'{setAddr:02x}')
                 libc.usleep(102582)
@@ -159,6 +164,7 @@ while ShortAddr < 64:
         if not found:
             data["devices"].append({"Address":f'{SearchAddr:02x}', "Short":ShortAddr})
             print("24-bit address found first ", f'{SearchAddr:02x}', "- assigning short address ", ShortAddr)
+            print("Not found...")
             setAddr = ((ShortAddr << 1) | 1)
             send_command(file_in, "B7" + f'{setAddr:02x}')
             libc.usleep(102582)
@@ -183,4 +189,5 @@ for group in devGrp:
     GroupCnt += 1
 writeToConfJson()
 send_command(file_in, "A100")
+print("Exiting...")
 file_in.close()
